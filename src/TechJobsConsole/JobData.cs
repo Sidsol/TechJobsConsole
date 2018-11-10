@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -37,7 +38,31 @@ namespace TechJobsConsole
             }
             return values;
         }
+        public static List<Dictionary<string, string>> FindByValue(string value)
+        {
+            // load data, if not already loaded
+            LoadData();
 
+            List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
+
+            foreach (Dictionary<string, string> job in AllJobs)
+            {
+                string aValue = value;
+                CultureInfo culture = new CultureInfo("es-ES", false);
+                //if (job.ContainsValue(aValue))
+                //{
+                //    jobs.Add(job);
+                //}
+                foreach (KeyValuePair<string, string> item in job)
+                {
+                    if (culture.CompareInfo.IndexOf(item.Value, value, CompareOptions.IgnoreCase) >= 0)
+                    {
+                        jobs.Add(job);
+                    }
+                }
+            }
+            return jobs;
+        }
         public static List<Dictionary<string, string>> FindByColumnAndValue(string column, string value)
         {
             // load data, if not already loaded
@@ -48,16 +73,23 @@ namespace TechJobsConsole
             foreach (Dictionary<string, string> row in AllJobs)
             {
                 string aValue = row[column];
+                CultureInfo culture = new CultureInfo("es-ES", false);
 
-                if (aValue.Contains(value))
+
+                if (culture.CompareInfo.IndexOf(aValue, value, CompareOptions.IgnoreCase) >= 0)
                 {
                     jobs.Add(row);
                 }
+
+
+                //if (aValue.Contains(value))
+                //{
+                //    jobs.Add(row);
+                //}
             }
 
             return jobs;
         }
-
         /*
          * Load and parse data from job_data.csv
          */
